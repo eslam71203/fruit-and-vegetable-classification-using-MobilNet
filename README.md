@@ -1,5 +1,4 @@
-# fruit-and-vegetable-classification-using-MobilNet
-
+# Fruit-and-vegetable-classification-using-MobilNet
 ## Overview
 This project focuses on building a deep learning model for recognizing and classifying images of various fruits and vegetables. The goal is to create a system that can identify different food items from images, enabling applications such as recipe recommendation based on captured photos.
 
@@ -11,21 +10,17 @@ The dataset was collected by scraping images from Bing Image Search for the purp
 
 ## Getting Started
 ### Prerequisites
-- Python (3.x)
+- Python (3.11)
 - TensorFlow
 - NumPy
 - Matplotlib
 - Pandas
-
-### Installation
-```bash
-pip install -r requirements.txt
-```
+- Flask
 
 ### Usage
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/fruit-and-vegetable-image-recognition.git
+   git clone https://github.com/Islam Nasser Saeed/fruit-and-vegetable-image-recognition.git
    ```
 
 2. Change to the project directory:
@@ -33,59 +28,53 @@ pip install -r requirements.txt
    cd fruit-and-vegetable-image-recognition
    ```
 
-3. Run the image recognition script:
+3. Run the Streamlit application:
    ```bash
-   python recognize_image.py path/to/your/image.jpg
+   streamlit run streamlit_app.py
    ```
 
-## Model Architecture
-The model architecture is based on transfer learning using MobileNetV2 as the base model, with additional dense layers for classification.
+4. Explore the Flask API (Optional):
+   ```bash
+   python flask_api.py
+   ```
 
+## Streamlit Application
+The Streamlit application allows users to upload an image, make predictions, and get information about the predicted food item's category and calories.
+
+## Flask API
+The Flask API provides an endpoint (`/predict`) for making predictions on images. You can send a POST request to this endpoint with an image file attached, and the API will return a JSON response with the predicted class.
+
+Example using `requests` in Python:
 ```python
-# Code snippet for model creation
-import tensorflow as tf
-from tensorflow.keras.applications import MobileNetV2
+import requests
+from PIL import Image
+from io import BytesIO
 
-pretrained_model = MobileNetV2(input_shape=(224, 224, 3), include_top=False, weights='imagenet', pooling='avg')
-pretrained_model.trainable = False
+# Load an image
+image_path = 'path/to/your/image.jpg'
+image = Image.open(image_path)
 
-x = tf.keras.layers.Dense(128, activation='relu')(pretrained_model.output)
-x = tf.keras.layers.Dense(128, activation='relu')(x)
-outputs = tf.keras.layers.Dense(num_classes, activation='softmax')(x)
+# Convert the image to bytes
+image_bytes = BytesIO()
+image.save(image_bytes, format='JPEG')
+image_bytes = image_bytes.getvalue()
 
-model = tf.keras.Model(inputs=pretrained_model.input, outputs=outputs)
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# Send a POST request to the API
+url = 'http://127.0.0.1:5000/predict'  # Update with your API endpoint
+files = {'file': ('image.jpg', image_bytes, 'image/jpeg')}
+response = requests.post(url, files=files)
+
+# Print the prediction
+print(response.json())
 ```
 
-## Training
-The model is trained on the provided dataset using TensorFlow's ImageDataGenerator for data augmentation.
-
-```bash
-python train_model.py
-```
-
-## Evaluation
-Model performance is evaluated on the test dataset, and a classification report is generated.
-
-```bash
-python evaluate_model.py
-```
-
-## Inference
-To use the trained model for inference on a new image, you can utilize the `output` function.
-
-```python
-from your_module import output
-
-result = output('path/to/your/image.jpg')
-print(f'The predicted class is: {result}')
-```
+Ensure to update the API endpoint and adjust the code based on your specific project structure.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
-- Dataset source: [Your Dataset Source]
-
-Feel free to customize and extend this template based on your project specifics. Ensure to include detailed information about your project, how to install and use it, and any additional resources or acknowledgments.
+- Dataset source: https://www.kaggle.com/datasets/kritikseth/fruit-and-vegetable-image-recognition
 ```
+
+Feel free to customize and extend this template based on your project specifics. If you have any specific information you'd like to add or modify, please do so accordingly.
